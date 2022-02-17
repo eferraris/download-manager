@@ -16,7 +16,7 @@ dependencies {
     implementation("com.amazonaws:aws-java-sdk-s3")
     implementation("commons-io:commons-io:2.11.0")
     implementation("commons-io:commons-io:2.11.0")
-    implementation("org.slf4j:slf4j-simple:1.7.36")
+    implementation("ch.qos.logback:logback-classic:1.2.10")
 }
 
 publishing {
