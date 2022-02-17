@@ -27,7 +27,7 @@ class FilePart(
         file.exists()
             .takeIf { !it }
             ?.let {
-                val bytes = measure(lower, upper) {
+                val bytes = measure(lower) {
                     client
                         .getObject(
                             GetObjectRequest(request.bucketName, request.keyName)
@@ -42,7 +42,7 @@ class FilePart(
 
     }
 
-    private inline fun <T> measure(lower: Long, upper: Long, block: () -> T): T {
+    private inline fun <T> measure(lower: Long, block: () -> T): T {
         var result: T
 
         log("file part ${lower.toString().padEnd(10)} took ${
