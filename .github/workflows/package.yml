@@ -23,5 +23,5 @@ jobs:
 
       - name: generate package
         run: |
-          export PAT=${{ secrets.PAT }}
+          export TOKEN=${{ secrets.TOKEN }}
           gradle publish

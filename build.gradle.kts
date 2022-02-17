@@ -4,7 +4,7 @@ plugins {
 }
 
 group="com.eferraris"
-version="1.0.1"
+version="1.0.2"
 
 repositories {
     mavenCentral()
@@ -14,7 +14,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation( platform("com.amazonaws:aws-java-sdk-bom:1.12.159") )
     implementation("com.amazonaws:aws-java-sdk-s3")
-    implementation("commons-io:commons-io:2.11.0")
     implementation("commons-io:commons-io:2.11.0")
     implementation("ch.qos.logback:logback-classic:1.2.10")
 }
@@ -26,7 +25,7 @@ publishing {
             url = uri("https://maven.pkg.github.com/eferraris/download-manager")
             credentials {
                 username = "eferraris"
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("PAT")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
             }
         }
     }
