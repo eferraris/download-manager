@@ -1,9 +1,9 @@
-package com.eferraris.download_manager.manager
+package com.eferraris.download.manager
 
 import com.amazonaws.services.s3.AmazonS3
-import com.eferraris.download_manager.model.DownloadRequest
-import com.eferraris.download_manager.model.FilePart
-import com.eferraris.download_manager.utils.Utils
+import com.eferraris.download.manager.model.DownloadRequest
+import com.eferraris.download.manager.model.FilePart
+import com.eferraris.download.manager.utils.Utils
 import org.apache.commons.io.FileUtils
 import java.io.File
 
@@ -11,7 +11,8 @@ class MultipartDownloadManager(
     private val client: AmazonS3,
     private val threshold: Long,
     private val request: DownloadRequest,
-    private val parallel: Boolean
+    private val parallel: Boolean,
+    private val logReport: Boolean
 ) {
 
     private val parts = mutableListOf<FilePart>()
@@ -43,7 +44,7 @@ class MultipartDownloadManager(
         while ( totalLength > upper ) {
             lower+=threshold
             upper+=threshold
-            parts.add( FilePart(lower - threshold, upper(upper, totalLength), request, client) )
+            parts.add( FilePart(lower - threshold, upper(upper, totalLength), request, client, logReport) )
         }
 
     }

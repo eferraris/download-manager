@@ -1,4 +1,4 @@
-package com.eferraris.download_manager.model
+package com.eferraris.download.manager.model
 
 data class DownloadRequest(
     val bucketName: String,

@@ -1,4 +1,4 @@
-package com.eferraris.download_manager.utils
+package com.eferraris.download.manager.utils
 
 object Utils {
 
