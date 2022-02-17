@@ -5,6 +5,7 @@ import com.eferraris.download.manager.model.DownloadRequest
 import com.eferraris.download.manager.model.FilePart
 import com.eferraris.download.manager.utils.Utils
 import org.apache.commons.io.FileUtils
+import org.slf4j.LoggerFactory
 import java.io.File
 
 class MultipartDownloadManager(
@@ -16,8 +17,11 @@ class MultipartDownloadManager(
 ) {
 
     private val parts = mutableListOf<FilePart>()
+    private val log = LoggerFactory.getLogger(MultipartDownloadManager::class.java)
 
     fun download() {
+
+        log.info("download of key ${request.keyName} has started")
 
         instantiateParts()
 
@@ -56,9 +60,12 @@ class MultipartDownloadManager(
     private fun joinParts() {
         val destinationFile = File( request.destinationPath )
 
-        parts
-            .map { File( Utils.partPath(request.destinationPath, it.lower) ) }
-            .forEach { FileUtils.writeByteArrayToFile(destinationFile, it.readBytes(), true) }
+        if ( !destinationFile.exists() )
+            parts
+                .map { File( Utils.partPath(request.destinationPath, it.lower) ) }
+                .forEach { FileUtils.writeByteArrayToFile(destinationFile, it.readBytes(), true) }
+        else
+            log.error("file ${request.destinationPath} already exists")
 
         FileUtils.deleteDirectory( File("${Utils.path(request.destinationPath)}/${Utils.fileWithoutExtension(request.destinationPath)}") )
     }
