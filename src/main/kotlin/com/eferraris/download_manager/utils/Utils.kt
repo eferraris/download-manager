@@ -1,6 +1,6 @@
 package com.eferraris.download_manager.utils
 
-object FileCommonOperations {
+object Utils {
 
     fun path(fullPath: String): String = fullPath
         .split("/")
@@ -13,5 +13,8 @@ object FileCommonOperations {
     fun fileWithoutExtension(fullPath: String): String = filename(fullPath)
         .split(".")
         .first()
+
+    fun partPath(destinationPath: String, lower: Long) =
+        "${path(destinationPath)}/${fileWithoutExtension(destinationPath)}/${lower}-${filename(destinationPath)}"
 
 }

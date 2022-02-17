@@ -3,6 +3,9 @@ package com.eferraris.download_manager.manager
 import com.amazonaws.services.s3.AmazonS3
 import com.eferraris.download_manager.model.DownloadRequest
 import com.eferraris.download_manager.model.FilePart
+import com.eferraris.download_manager.utils.Utils
+import org.apache.commons.io.FileUtils
+import java.io.File
 
 class MultipartDownloadManager(
     private val client: AmazonS3,
@@ -23,6 +26,8 @@ class MultipartDownloadManager(
             ?: parts.stream()
 
         partStream.forEach { it.download() }
+
+        joinParts()
 
     }
 
@@ -46,5 +51,15 @@ class MultipartDownloadManager(
     private fun upper(upper: Long, totalLength: Long) = (upper - 1)
         .takeIf { it < totalLength }
         ?: (totalLength - 1)
+
+    private fun joinParts() {
+        val destinationFile = File( request.destinationPath )
+
+        parts
+            .map { File( Utils.partPath(request.destinationPath, it.lower) ) }
+            .forEach { FileUtils.writeByteArrayToFile(destinationFile, it.readBytes(), true) }
+
+        FileUtils.deleteDirectory( File("${Utils.path(request.destinationPath)}/${Utils.fileWithoutExtension(request.destinationPath)}") )
+    }
 
 }
