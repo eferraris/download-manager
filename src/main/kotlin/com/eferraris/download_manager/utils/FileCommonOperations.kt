@@ -1,4 +1,4 @@
-package com.eferraris.download_manager
+package com.eferraris.download_manager.utils
 
 object FileCommonOperations {
 

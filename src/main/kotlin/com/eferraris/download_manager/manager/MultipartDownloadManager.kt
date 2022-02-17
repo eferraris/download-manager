@@ -1,14 +1,14 @@
-package com.eferraris.download_manager
+package com.eferraris.download_manager.manager
 
 import com.amazonaws.services.s3.AmazonS3
-import org.slf4j.Logger
+import com.eferraris.download_manager.model.DownloadRequest
+import com.eferraris.download_manager.model.FilePart
 
 class MultipartDownloadManager(
     private val client: AmazonS3,
     private val threshold: Long,
     private val request: DownloadRequest,
-    private val parallel: Boolean,
-    private val log: Logger?
+    private val parallel: Boolean
 ) {
 
     private val parts = mutableListOf<FilePart>()
@@ -38,15 +38,7 @@ class MultipartDownloadManager(
         while ( totalLength > upper ) {
             lower+=threshold
             upper+=threshold
-            parts.add(
-                FilePart(
-                    lower - threshold,
-                    upper(upper, totalLength),
-                    request,
-                    client,
-                    log
-                )
-            )
+            parts.add( FilePart(lower - threshold, upper(upper, totalLength), request, client) )
         }
 
     }

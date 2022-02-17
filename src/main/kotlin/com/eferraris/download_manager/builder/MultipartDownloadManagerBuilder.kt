@@ -1,7 +1,8 @@
-package com.eferraris.download_manager
+package com.eferraris.download_manager.builder
 
 import com.amazonaws.services.s3.AmazonS3
-import org.slf4j.Logger
+import com.eferraris.download_manager.manager.MultipartDownloadManager
+import com.eferraris.download_manager.model.DownloadRequest
 
 class MultipartDownloadManagerBuilder(
     private val client: AmazonS3,
@@ -12,7 +13,6 @@ class MultipartDownloadManagerBuilder(
 
     private var threshold: Long = 1024 * 1024 * 20L
     private var parallel: Boolean = false
-    private var log: Logger? = null
 
     companion object {
 
@@ -40,17 +40,11 @@ class MultipartDownloadManagerBuilder(
         return this
     }
 
-    fun withLogger(log: Logger): MultipartDownloadManagerBuilder {
-        this.log = log
-        return this
-    }
-
     fun build(): MultipartDownloadManager = MultipartDownloadManager(
         client,
         threshold,
         DownloadRequest(bucketName, keyName, destinationPath),
-        parallel,
-        log
+        parallel
     )
 
 
