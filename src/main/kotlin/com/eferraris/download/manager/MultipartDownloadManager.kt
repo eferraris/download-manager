@@ -21,6 +21,14 @@ class MultipartDownloadManager(
 
     fun download() {
 
+        File(request.destinationPath)
+            .exists()
+            .takeIf { it }
+            ?.let {
+                log.error("file ${request.destinationPath} already exists")
+                return
+            }
+
         log.info("download of key ${request.keyName} has started")
 
         instantiateParts()
@@ -60,12 +68,9 @@ class MultipartDownloadManager(
     private fun joinParts() {
         val destinationFile = File( request.destinationPath )
 
-        if ( !destinationFile.exists() )
-            parts
-                .map { File( Utils.partPath(request.destinationPath, it.lower) ) }
-                .forEach { FileUtils.writeByteArrayToFile(destinationFile, it.readBytes(), true) }
-        else
-            log.error("file ${request.destinationPath} already exists")
+        parts
+            .map { File( Utils.partPath(request.destinationPath, it.lower) ) }
+            .forEach { FileUtils.writeByteArrayToFile(destinationFile, it.readBytes(), true) }
 
         FileUtils.deleteDirectory( File("${Utils.path(request.destinationPath)}/${Utils.fileWithoutExtension(request.destinationPath)}") )
     }
