@@ -15,4 +15,6 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: generate package
-        run: gradle publish
+        run: |
+          export ${{ secrets.PAT }}
+          gradle publish

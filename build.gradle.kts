@@ -1,6 +1,6 @@
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.6.10"
-    `maven-publish` apply false
+    `maven-publish`
 }
 
 group="com.eferraris"
@@ -19,26 +19,20 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:1.7.36")
 }
 
-subprojects {
-    apply(plugin = "maven-publish")
-    configure<PublishingExtension> {
-        repositories {
-
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/eferraris/download-manager")
-                credentials {
-                    username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-                    password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
-                }
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/eferraris/download-manager")
+            credentials {
+                username = "eferraris"
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("PAT")
             }
         }
-
-        publications {
-            register<MavenPublication>("gpr") {
-                from(components["java"])
-            }
+    }
+    publications {
+        register<MavenPublication>("gpr") {
+            from(components["java"])
         }
-
     }
 }
