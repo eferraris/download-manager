@@ -44,6 +44,7 @@ class MultipartDownloadManager(
 
                     ForkJoinPool( threads )
                         .submit { parts.parallelStream().forEach { it.download() } }
+                        .get()
 
                 }?: let { parts.parallelStream().forEach { it.download() } }
 
