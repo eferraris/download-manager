@@ -7,13 +7,15 @@ import com.eferraris.download.manager.utils.Utils
 import org.apache.commons.io.FileUtils
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.util.concurrent.ForkJoinPool
 
 class MultipartDownloadManager(
     private val client: AmazonS3,
     private val threshold: Long,
     private val request: DownloadRequest,
     private val parallel: Boolean,
-    private val logReport: Boolean
+    private val logReport: Boolean,
+    private val threads: Int?
 ) {
 
     private val parts = mutableListOf<FilePart>()
@@ -34,12 +36,18 @@ class MultipartDownloadManager(
 
         instantiateParts()
 
-        val partStream = parts
-            .parallelStream()
-            .takeIf { parallel }
-            ?: parts.stream()
+        parallel
+            .takeIf { it }
+            ?.let {
 
-        partStream.forEach { it.download() }
+                threads?.let {
+
+                    ForkJoinPool( threads )
+                        .submit { parts.parallelStream().forEach { it.download() } }
+
+                }?: let { parts.parallelStream().forEach { it.download() } }
+
+            }?: let { parts.forEach { it.download() } }
 
         joinParts()
 

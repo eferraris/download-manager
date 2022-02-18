@@ -14,6 +14,7 @@ class MultipartDownloadManagerBuilder(
     private var threshold: Long = 1024 * 1024 * 20L
     private var parallel: Boolean = false
     private var logReport: Boolean = false
+    private var threads: Int? = null
 
     companion object {
 
@@ -36,6 +37,11 @@ class MultipartDownloadManagerBuilder(
         return this
     }
 
+    fun withNumberOfThreads(threads: Int): MultipartDownloadManagerBuilder {
+        this.threads = threads
+        return this
+    }
+
     fun withParallelResolution(parallel: Boolean): MultipartDownloadManagerBuilder {
         this.parallel = parallel
         return this
@@ -51,7 +57,8 @@ class MultipartDownloadManagerBuilder(
         threshold,
         DownloadRequest(bucketName, keyName, destinationPath),
         parallel,
-        logReport
+        logReport,
+        threads
     )
 
 
