@@ -6,7 +6,7 @@ Boost AWS S3 file download
 
 ## What is DownloadManager?
 
-It is designed to optimize file downloading from AWS S3 by spliting the file in several parts and downloads each part separately. It gives you the possibility to paralelize this process giving you a performance boost. It will help you when are trying to download large files with poor internet connection: as each part is downloaded and persisted, when the process fails, it will start from where it was left.
+It is designed to optimize file downloading from AWS S3 by spliting the file in several parts and downloading each part separately. It gives you the possibility to paralelize this process giving you a performance boost. It will help you when are trying to download large files with poor internet connection: as each part is downloaded and persisted, when the process fails, it will start from where it was left.
 
 ## Usage
 
