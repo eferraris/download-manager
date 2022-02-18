@@ -34,8 +34,9 @@ class FilePart(
                             GetObjectRequest(request.bucketName, request.keyName)
                                 .withRange(lower, upper)
                         )
+                    val bytes = s3Object.objectContent.readAllBytes()
                     s3Object.close()
-                    s3Object.objectContent.readAllBytes()
+                    bytes
                 }
 
                 FileUtils.writeByteArrayToFile(file, bytes, true)
