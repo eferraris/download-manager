@@ -21,12 +21,13 @@ class MultipartDownloadManager(
 
     fun download() {
 
-        File(request.destinationPath)
-            .exists()
+        val file = File( request.destinationPath )
+
+        file.exists()
             .takeIf { it }
             ?.let {
-                log.error("file ${request.destinationPath} already exists")
-                return
+                log.warn("file ${request.destinationPath} already exists, it will be erased")
+                FileUtils.delete( file )
             }
 
         log.info("download of key ${request.keyName} has started")
