@@ -2,8 +2,8 @@ name: 'package on push'
 
 on:
   push:
-    branches:
-      - '*'
+    tags:
+      - 'v*.*.*'
 
 jobs:
 
@@ -24,4 +24,4 @@ jobs:
       - name: generate package
         run: |
           export TOKEN=${{ secrets.TOKEN }}
-          gradle publish
+          gradle -Pversion=${GITHUB_REF#refs/*/} publish
