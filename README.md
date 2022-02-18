@@ -1,8 +1,8 @@
+[![Build Status](https://github.com/eferraris/download-manager/actions/workflows/package.yml/badge.svg?branch=dev)](https://github.com/eferraris/download-manager/actions/workflows/package.yml)
+
 # download-manager
 
 Boost AWS S3 file download
-
-[![Build Status](https://github.com/eferraris/download-manager/actions/workflows/package.yml/badge.svg?branch=dev)](https://github.com/eferraris/download-manager/actions/workflows/package.yml)
 
 ## What is DownloadManager?
 
