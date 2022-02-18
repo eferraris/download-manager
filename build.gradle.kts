@@ -3,9 +3,6 @@ plugins {
     `maven-publish`
 }
 
-group="com.eferraris"
-version="1.1.3"
-
 repositories {
     mavenCentral()
 }
