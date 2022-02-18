@@ -24,4 +24,4 @@ jobs:
       - name: generate package
         run: |
           export TOKEN=${{ secrets.TOKEN }}
-          gradle -Pversion=${GITHUB_REF#refs/*/} publish
+          ./gradlew -Pversion=${GITHUB_REF#refs/*/} publish
