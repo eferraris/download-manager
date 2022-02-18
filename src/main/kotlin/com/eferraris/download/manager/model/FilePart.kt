@@ -29,13 +29,13 @@ class FilePart(
             .takeIf { !it }
             ?.let {
                 val bytes = measure( lower ) {
-                    client
+                    val s3Object = client
                         .getObject(
                             GetObjectRequest(request.bucketName, request.keyName)
                                 .withRange(lower, upper)
                         )
-                        .objectContent
-                        .readAllBytes()
+                    s3Object.close()
+                    s3Object.objectContent.readAllBytes()
                 }
 
                 FileUtils.writeByteArrayToFile(file, bytes, true)
