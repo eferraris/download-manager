@@ -11,15 +11,19 @@ import kotlin.system.measureTimeMillis
 
 class FilePart(
     val lower: Long,
+    val part: Long,
     val upper: Long,
+    private val size: Long = upper - lower + 1,
     private val request: DownloadRequest,
     private val client: AmazonS3,
-    private val logReport: Boolean
+    private val logReport: Boolean,
+    private val totalParts: Long,
+    private val totalBytes: Long
 ) {
 
     private val log: Logger = LoggerFactory.getLogger( FilePart::class.java )
 
-    fun download() {
+    fun download(callback: (PartProgress) -> Unit) {
 
         val file = File( Utils.partPath(request.destinationPath, lower) )
 
@@ -29,11 +33,21 @@ class FilePart(
             .takeIf { !it }
             ?.let {
                 val bytes = measure( lower ) {
-                    val s3Object = client
-                        .getObject(
-                            GetObjectRequest(request.bucketName, request.keyName)
-                                .withRange(lower, upper)
-                        )
+                    val request = GetObjectRequest(request.bucketName, request.keyName)
+                        .withRange(lower, upper)
+                    request
+                        .setGeneralProgressListener {
+                            callback(
+                                PartProgress(
+                                    part = part,
+                                    totalParts = totalParts,
+                                    totalBytesToTransfer = totalBytes,
+                                    partBytesTransferred = it.bytesTransferred,
+                                    partBytesToTransfer = size
+                                )
+                            )
+                        }
+                    val s3Object = client.getObject(request)
                     val bytes = s3Object.objectContent.readAllBytes()
                     s3Object.close()
                     bytes

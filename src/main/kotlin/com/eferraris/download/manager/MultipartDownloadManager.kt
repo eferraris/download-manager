@@ -3,11 +3,13 @@ package com.eferraris.download.manager
 import com.amazonaws.services.s3.AmazonS3
 import com.eferraris.download.manager.model.DownloadRequest
 import com.eferraris.download.manager.model.FilePart
+import com.eferraris.download.manager.model.PartProgress
 import com.eferraris.download.manager.utils.Utils
 import org.apache.commons.io.FileUtils
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.concurrent.ForkJoinPool
+import kotlin.math.ceil
 
 class MultipartDownloadManager(
     private val client: AmazonS3,
@@ -15,14 +17,14 @@ class MultipartDownloadManager(
     private val request: DownloadRequest,
     private val parallel: Boolean,
     private val logReport: Boolean,
-    private val threads: Int?
+    private val threads: Int?,
+    private val callback: (PartProgress) -> Unit
 ) {
 
     private val parts = mutableListOf<FilePart>()
     private val log = LoggerFactory.getLogger(MultipartDownloadManager::class.java)
 
     fun download() {
-
         val file = File( request.destinationPath )
 
         file.exists()
@@ -43,19 +45,18 @@ class MultipartDownloadManager(
                 threads?.let {
 
                     ForkJoinPool( threads )
-                        .submit { parts.parallelStream().forEach { it.download() } }
+                        .submit { parts.parallelStream().forEach { it.download( callback ) } }
                         .get()
 
-                }?: let { parts.parallelStream().forEach { it.download() } }
+                }?: let { parts.parallelStream().forEach { it.download( callback ) } }
 
-            }?: let { parts.forEach { it.download() } }
+            }?: let { parts.forEach { it.download( callback ) } }
 
         joinParts()
 
     }
 
     private fun instantiateParts() {
-
         val totalLength = client
             .getObjectMetadata(request.bucketName, request.keyName)
             .contentLength
@@ -63,18 +64,31 @@ class MultipartDownloadManager(
         var upper = 0L
         var lower = 0L
 
+        val totalParts = ceil(totalLength.toDouble() / threshold).toLong()
+
         while ( totalLength > upper ) {
             lower+=threshold
             upper+=threshold
-            parts.add( FilePart(lower - threshold, upper(upper, totalLength), request, client, logReport) )
+            val lowerValue = lower - threshold
+            val upperValue = upper(upper, totalLength)
+            parts
+                .add(
+                    FilePart(
+                        totalParts = totalParts,
+                        totalBytes = totalLength,
+                        part = parts.size.toLong(),
+                        lower = lowerValue,
+                        upper = upperValue,
+                        request = request,
+                        client = client,
+                        logReport = logReport
+                    )
+                )
         }
-
     }
-
     private fun upper(upper: Long, totalLength: Long) = (upper - 1)
         .takeIf { it < totalLength }
         ?: (totalLength - 1)
-
     private fun joinParts() {
         val destinationFile = File( request.destinationPath )
 
@@ -84,5 +98,4 @@ class MultipartDownloadManager(
 
         FileUtils.deleteDirectory( File("${Utils.path(request.destinationPath)}/${Utils.fileWithoutExtension(request.destinationPath)}") )
     }
-
 }
