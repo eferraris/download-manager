@@ -31,7 +31,7 @@ class MultipartDownloadManager(
             .takeIf { it }
             ?.let {
                 log.warn("file ${request.destinationPath} already exists, it will be erased")
-                FileUtils.delete( file )
+                file.delete()
             }
 
         log.info("download of key ${request.keyName} has started")
